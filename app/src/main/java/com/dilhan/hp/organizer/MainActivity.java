@@ -26,9 +26,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    ListView l1;
+    ListView listView;
     ArrayList arrayList = new ArrayList();
     DBOrganizer dbOrganizer = new DBOrganizer(MainActivity.this);
+    Cursor cursor;
+    ArrayAdapter arrayAdapter;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -39,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.mybutton) {
             Intent intent = new Intent(MainActivity.this, AddNote.class);
             startActivity(intent);
@@ -51,39 +52,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        listView = findViewById(R.id.noteList);
+        displayNotes();
+        arrayAdapter = new ArrayAdapter(MainActivity.this, R.layout.note_list_view, arrayList);
+        listView.setAdapter(arrayAdapter);
 
-        l1 = findViewById(R.id.noteList);
-
-        Cursor c = dbOrganizer.displayNotes(dbOrganizer);
-
-        while (c.moveToNext()) {
-            arrayList.add(c.getString(0));
-        }
-
-        ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, R.layout.note_list_view, arrayList);
-        l1.setAdapter(arrayAdapter);
-
-        l1.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                dbOrganizer.deleteNote(dbOrganizer,String.valueOf(arrayList.get(position)));
-                Toast.makeText(MainActivity.this,"Note Deleted",Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(MainActivity.this,MainActivity.class);
+                dbOrganizer.deleteNote(dbOrganizer, String.valueOf(arrayList.get(position)));
+                Toast.makeText(MainActivity.this, "Note Deleted", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
                 startActivity(intent);
                 return true;
             }
         });
 
-        l1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent  intent= new Intent(MainActivity.this,AddNote.class);
-                intent.putExtra("Title",String.valueOf(arrayList.get(position)));
-                intent.putExtra("IsUpdate",true);
+                cursor.moveToPosition(position);
+                Intent intent = new Intent(MainActivity.this, AddNote.class);
+                intent.putExtra("Title", cursor.getString(0));
+                intent.putExtra("Content", cursor.getString(1));
+                intent.putExtra("IsUpdate", true);
                 startActivity(intent);
             }
         });
     }
 
-
+    public void displayNotes() {
+        cursor = dbOrganizer.displayNotes(dbOrganizer);
+        while (cursor.moveToNext()) {
+            arrayList.add(cursor.getString(0));
+        }
+    }
 }

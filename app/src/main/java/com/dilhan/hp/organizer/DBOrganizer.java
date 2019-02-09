@@ -28,7 +28,6 @@ public class DBOrganizer extends SQLiteOpenHelper {
         contentValues.put("Title", title);
         contentValues.put("Content", content);
         sqLiteDatabase.insert("NOTE", null, contentValues);
-
     }
 
     public Cursor displayNotes(DBOrganizer dbOrganizer) {
@@ -37,19 +36,15 @@ public class DBOrganizer extends SQLiteOpenHelper {
         return c;
     }
 
-    public void  deleteNote(DBOrganizer dbOrganizer ,String title){
+    public void deleteNote(DBOrganizer dbOrganizer, String title) {
         SQLiteDatabase sqLiteDatabase = dbOrganizer.getWritableDatabase();
-        sqLiteDatabase.delete("NOTE","Title=?",new String[]{title});
+        sqLiteDatabase.delete("NOTE", "Title=?", new String[]{title});
     }
 
-    public  void updateNote(DBOrganizer dbOrganizer ,String title,String content){
+    public void updateNote(DBOrganizer dbOrganizer, String title, String content) {
         SQLiteDatabase sqLiteDatabase = dbOrganizer.getWritableDatabase();
-//        String sql="UPDATE NOTE SET Content = cxc WHERE Title = cxc";
-//        sqLiteDatabase.rawQuery("UPDATE NOTE SET Content = '"+content+"' WHERE Title = '"+title+"'",null);
-
-        ContentValues contentValues= new ContentValues();
-//        contentValues.put("Title",title);
-        contentValues.put("Content",content);
-        sqLiteDatabase.update("NOTE",contentValues,"Title=?",new String[]{title});
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("Content", content);
+        sqLiteDatabase.update("NOTE", contentValues, "Title=?", new String[]{title});
     }
 }
